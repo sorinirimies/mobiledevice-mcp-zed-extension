@@ -1,0 +1,59 @@
+[package]
+name = "mobile-device-mcp"
+version = "0.1.0"
+edition = "2021"
+description = "Mobile device automation MCP server for Android and iOS with Zed extension support"
+authors = ["Sorin Albu-Irimies"]
+license = "Apache-2.0"
+repository = "https://github.com/sorinirimies/mobiledevice-mcp-zed-extension"
+
+# Library target for Zed extension (WASM)
+[lib]
+name = "mobile_device_mcp"
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+# Binary target for native MCP server
+# Only build when native-binary feature is enabled
+[[bin]]
+name = "mobile-device-mcp-server"
+path = "src/main.rs"
+required-features = ["native-binary"]
+
+[dependencies]
+# Always needed for both WASM and native
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Zed Extension API (required for WASM lib)
+zed_extension_api = "0.5.0"
+schemars = "0.8"
+
+# Native binary dependencies (only for native binary, not WASM)
+adb_client = { version = "2.1", optional = true }
+base64 = { version = "0.22", optional = true }
+tokio = { version = "1.40", features = ["full", "rt-multi-thread"], optional = true }
+uuid = { version = "1.0", features = ["v4"], optional = true }
+quick-xml = { version = "0.31", features = ["serialize"], optional = true }
+
+# iOS device support (only on macOS for native binary)
+[target.'cfg(target_os = "macos")'.dependencies]
+idevice = { version = "0.1.43", features = ["usbmuxd"], optional = true }
+
+[features]
+default = []
+# Feature for building the native binary
+native-binary = ["adb_client", "base64", "tokio", "uuid", "idevice", "quick-xml"]
+# Feature for iOS device support (requires macOS and libimobiledevice)
+ios-support = ["idevice"]
+# Feature for building as Zed extension (WASM)
+zed-extension = []
+
+[profile.release]
+opt-level = 3       # Optimize for performance
+lto = true          # Enable Link Time Optimization
+codegen-units = 1   # Better optimization
+strip = true        # Strip symbols from binary
+
+[profile.release.package."mobile-device-mcp"]
+opt-level = "z"     # Optimize WASM for size

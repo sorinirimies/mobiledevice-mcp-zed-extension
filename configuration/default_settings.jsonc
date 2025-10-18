@@ -1,0 +1,12 @@
+{
+  // Enable debug logging for troubleshooting
+  // When enabled, the MCP server will log detailed information to stderr
+  "debug": false,
+
+  // Preferred platform for device detection and operations
+  // Options:
+  //   "auto" - Detect and use all available devices (Android + iOS)
+  //   "android" - Only detect and use Android devices and emulators
+  //   "ios" - Only detect and use iOS simulators and devices (macOS only)
+  "platform": "auto",
+}

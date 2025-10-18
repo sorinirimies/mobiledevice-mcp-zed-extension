@@ -1,0 +1,15 @@
+id = "mcp-server-mobile-device"
+name = "Mobile Device MCP Server"
+description = "A Zed extension for mobile device automation and testing via MCP. Supports iOS, Android, simulators, emulators, and real devices."
+version = "0.1.0"
+schema_version = 1
+authors = ["Sorin Albu-Irimies"]
+repository = "https://github.com/sorinirimies/mobiledevice-mcp-zed-extension"
+
+[lib]
+kind = "Rust"
+version = "0.7.0"
+
+[context_servers.mcp-server-mobile-device]
+name = "Mobile Device MCP Server"
+description = "Control iOS and Android devices, simulators, and emulators from Zed"
