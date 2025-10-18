@@ -414,6 +414,27 @@ impl AndroidRobot {
 
     pub fn launch_app(&mut self, package_name: &str) -> Result<(), String> {
         self.log_debug(&format!("Launching app: {}", package_name));
+
+        // First, check if the app is installed
+        let installed_apps = self.list_apps()?;
+        let app_exists = installed_apps
+            .iter()
+            .any(|app| app.package_name == package_name);
+
+        if !app_exists {
+            // Get list of installed app names for better error message
+            let available_apps: Vec<String> = installed_apps
+                .iter()
+                .map(|app| format!("  - {} ({})", app.app_name, app.package_name))
+                .collect();
+
+            return Err(format!(
+                "App '{}' is not installed on this device.\n\nAvailable apps:\n{}",
+                package_name,
+                available_apps.join("\n")
+            ));
+        }
+
         self.execute_shell_command(&[
             "monkey",
             "-p",
