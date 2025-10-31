@@ -1,0 +1,69 @@
+# Configuration for typos spell checker
+# https://github.com/crate-ci/typos
+
+[default]
+extend-ignore-re = [
+  # Ignore hex strings
+  "[0-9a-fA-F]{8,}",
+  # Ignore base64 strings
+  "[A-Za-z0-9+/]{20,}={0,2}",
+  # Ignore UUIDs
+  "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+]
+
+[default.extend-words]
+# Android/ADB specific terms
+adb = "adb"
+emulators = "emulators"
+simctl = "simctl"
+xcrun = "xcrun"
+idevice = "idevice"
+libimobiledevice = "libimobiledevice"
+
+# MCP and protocol terms
+jsonrpc = "jsonrpc"
+mcp = "mcp"
+wasm = "wasm"
+wasip1 = "wasip1"
+
+# Rust and cargo terms
+rustup = "rustup"
+rustfmt = "rustfmt"
+rustdoc = "rustdoc"
+clippy = "clippy"
+tarpaulin = "tarpaulin"
+
+# Mobile platform terms
+ios = "ios"
+ipa = "ipa"
+apk = "apk"
+iphone = "iphone"
+ipad = "ipad"
+
+# Common abbreviations
+msrv = "msrv"
+cicd = "cicd"
+api = "api"
+ui = "ui"
+
+[files]
+extend-exclude = [
+  "*.lock",
+  "*.toml",
+  "*.json",
+  "*.xml",
+  "*.wasm",
+  "target/",
+  "dist/",
+  ".git/",
+  "coverage/",
+  "*.png",
+  "*.jpg",
+  "*.svg",
+]
+
+[type.rust]
+extend-glob = ["*.rs"]
+
+[type.markdown]
+extend-glob = ["*.md"]

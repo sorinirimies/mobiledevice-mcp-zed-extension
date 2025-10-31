@@ -95,7 +95,7 @@ impl MobileDeviceManager {
         }
     }
 
-    // Additional methods using AndroidRobot
+    // Additional methods using AndroidRobot and IOSDeviceManager
     pub fn get_screen_size(
         &mut self,
         device_id: &str,
@@ -107,6 +107,10 @@ impl MobileDeviceManager {
                 let mut robot = self.android_manager.create_robot(device_id.to_string());
                 robot.get_screen_size().map(|s| (s.width, s.height))
             }
+            "ios" => self
+                .ios_manager
+                .get_screen_size(device_id)
+                .map(|s| (s.width, s.height)),
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -119,6 +123,10 @@ impl MobileDeviceManager {
                     .get_orientation()
                     .map(|o| format!("{:?}", o).to_lowercase())
             }
+            "ios" => self
+                .ios_manager
+                .get_orientation(device_id)
+                .map(|o| format!("{:?}", o).to_lowercase()),
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -141,6 +149,15 @@ impl MobileDeviceManager {
                 robot.set_orientation(orient)?;
                 Ok(format!("Set orientation to {}", orientation))
             }
+            "ios" => {
+                use devices::android::Orientation;
+                let orient = match orientation {
+                    "portrait" => Orientation::Portrait,
+                    "landscape" => Orientation::Landscape,
+                    _ => return Err(format!("Invalid orientation: {}", orientation)),
+                };
+                self.ios_manager.set_orientation(device_id, orient)
+            }
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -152,10 +169,16 @@ impl MobileDeviceManager {
         x: f64,
         y: f64,
     ) -> Result<String, String> {
-        self.tap_screen(device_id, platform, x, y)?;
-        std::thread::sleep(std::time::Duration::from_millis(50));
-        self.tap_screen(device_id, platform, x, y)?;
-        Ok("Double tap executed".to_string())
+        match platform {
+            "android" => {
+                self.tap_screen(device_id, platform, x, y)?;
+                std::thread::sleep(std::time::Duration::from_millis(50));
+                self.tap_screen(device_id, platform, x, y)?;
+                Ok("Double tap executed".to_string())
+            }
+            "ios" => self.ios_manager.double_tap_screen(device_id, x, y),
+            _ => Err("Not implemented for this platform".to_string()),
+        }
     }
 
     pub fn long_press_screen(
@@ -164,7 +187,7 @@ impl MobileDeviceManager {
         platform: &str,
         x: f64,
         y: f64,
-        _duration: u32,
+        duration: u32,
     ) -> Result<String, String> {
         match platform {
             "android" => {
@@ -172,6 +195,9 @@ impl MobileDeviceManager {
                 robot.long_press(x as u32, y as u32)?;
                 Ok(format!("Long pressed at ({}, {})", x, y))
             }
+            "ios" => self
+                .ios_manager
+                .long_press_screen(device_id, x, y, duration as u64),
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -199,6 +225,9 @@ impl MobileDeviceManager {
                 )?;
                 Ok("Swipe executed".to_string())
             }
+            "ios" => self
+                .ios_manager
+                .swipe_screen(device_id, start_x, start_y, end_x, end_y),
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -229,6 +258,17 @@ impl MobileDeviceManager {
                 robot.press_button(btn)?;
                 Ok(format!("Pressed button: {}", button))
             }
+            "ios" => {
+                use devices::android::Button;
+                let btn = match button.to_lowercase().as_str() {
+                    "home" => Button::Home,
+                    "power" => Button::Power,
+                    "volume_up" => Button::VolumeUp,
+                    "volume_down" => Button::VolumeDown,
+                    _ => return Err(format!("Button '{}' not supported on iOS. Available: home, power, volume_up, volume_down", button)),
+                };
+                self.ios_manager.press_button(device_id, btn)
+            }
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -243,6 +283,7 @@ impl MobileDeviceManager {
                 let mut robot = self.android_manager.create_robot(device_id.to_string());
                 robot.list_installed_apps()
             }
+            "ios" => self.ios_manager.list_apps(device_id),
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -258,6 +299,7 @@ impl MobileDeviceManager {
                 let mut robot = self.android_manager.create_robot(device_id.to_string());
                 robot.list_screen_elements(filter)
             }
+            "ios" => self.ios_manager.list_elements_on_screen(device_id, filter),
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -274,6 +316,7 @@ impl MobileDeviceManager {
                 robot.launch_app(app_id)?;
                 Ok(format!("Launched app: {}", app_id))
             }
+            "ios" => self.ios_manager.launch_app(device_id, app_id),
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -290,6 +333,7 @@ impl MobileDeviceManager {
                 robot.terminate_app(app_id)?;
                 Ok(format!("Terminated app: {}", app_id))
             }
+            "ios" => self.ios_manager.terminate_app(device_id, app_id),
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -306,6 +350,7 @@ impl MobileDeviceManager {
                 robot.install_app(app_path)?;
                 Ok(format!("Installed app from: {}", app_path))
             }
+            "ios" => self.ios_manager.install_app(device_id, app_path),
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -322,6 +367,7 @@ impl MobileDeviceManager {
                 robot.uninstall_app(app_id)?;
                 Ok(format!("Uninstalled app: {}", app_id))
             }
+            "ios" => self.ios_manager.uninstall_app(device_id, app_id),
             _ => Err("Not implemented for this platform".to_string()),
         }
     }
@@ -338,6 +384,7 @@ impl MobileDeviceManager {
                 robot.open_url(url)?;
                 Ok(format!("Opened URL: {}", url))
             }
+            "ios" => self.ios_manager.open_url(device_id, url),
             _ => Err("Not implemented for this platform".to_string()),
         }
     }

@@ -8,11 +8,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **CI/CD Infrastructure:** Complete GitHub Actions workflows
+  - Continuous Integration workflow (ci.yml) with multi-platform testing
+  - Automated release workflow (release.yml) with 7 platform targets
+  - Documentation deployment workflow (docs.yml) with GitHub Pages
+  - Integration testing workflow (integration.yml) with Android/iOS emulators
+- **Development Tools:** Justfile with 40+ commands for common tasks
+- **Automation:** Dependabot configuration for weekly dependency updates
+- **Quality Tools:** Spell checker (typos), link validator, git attributes
+- **Documentation:** 
+  - CONTRIBUTING.md with comprehensive contributor guidelines
+  - CI/CD_GUIDE.md with workflow reference
+  - QUICK_START.md for new contributors
+  - CI_CD_SETUP.md with complete infrastructure summary
+- **Templates:** 
+  - Pull request template with checklists
+  - Bug report issue template
+  - Feature request issue template
+- **README Updates:**
+  - CI/CD status badges (CI, Release, Codecov)
+  - Just command examples and workflow
+  - CI/CD section with workflow descriptions
+  - Contributing workflow documentation
 - iOS vs Android feature parity documentation
 - Comprehensive test suite with 18 automated tests
 - git-cliff configuration for changelog generation
 - Feature comparison matrix documentation
 - Verification and status documentation
+
+### CI/CD Features
+- Multi-platform testing on Ubuntu, macOS, and Windows
+- Stable and beta Rust version testing
+- Code quality gates (rustfmt, clippy, tests)
+- Security auditing with cargo-audit
+- Code coverage reporting with cargo-tarpaulin and Codecov
+- MSRV check (Rust 1.70+)
+- Automated release builds for 7 targets:
+  - Linux (x86_64, ARM64)
+  - macOS (Intel, Apple Silicon)
+  - Windows (x86_64)
+  - WASM (Zed extension)
+- Automatic changelog generation with git-cliff
+- crates.io publishing support
+- Daily integration tests with emulators
+- Documentation deployment to GitHub Pages
 
 ### Fixed
 - **Screenshot tool:** Now properly returns base64-encoded PNG data

@@ -1,0 +1,228 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please fill out the form below to help us understand your request.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have read the documentation and feature list
+          required: true
+        - label: This feature aligns with the project's goals
+          required: false
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What is the use case?
+      placeholder: |
+        As a [type of user], I want [goal] so that [benefit].
+
+        Currently, I have to [workaround], which is [problem].
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see
+      placeholder: |
+        I propose adding [feature] that would allow users to [capability].
+
+        This could work by [implementation approach].
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternative solutions or features?
+      placeholder: |
+        Alternative 1: [description]
+        Alternative 2: [description]
+
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Feature Type
+      description: What type of feature is this?
+      options:
+        - New Tool/Command
+        - Platform Support (Android)
+        - Platform Support (iOS)
+        - Platform Support (Other)
+        - Performance Improvement
+        - Developer Experience
+        - Documentation
+        - Testing/Quality
+        - Integration/API
+        - UI/UX Enhancement
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Target Platforms
+      description: Which platforms would this feature affect?
+      multiple: true
+      options:
+        - All Platforms
+        - Linux
+        - macOS
+        - Windows
+        - Android Devices
+        - iOS Devices
+        - Zed Extension
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Critical - Blocking my workflow
+        - High - Would significantly improve my workflow
+        - Medium - Nice to have
+        - Low - Minor enhancement
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Usage Examples
+      description: Show how this feature would be used
+      placeholder: |
+        # Example 1: Basic usage
+        just new-command
+
+        # Example 2: Advanced usage
+        echo '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"new_tool"}}' | mcp-server
+
+        # Expected output:
+        {
+          "result": {...}
+        }
+      render: bash
+
+  - type: textarea
+    id: api-design
+    attributes:
+      label: API Design (if applicable)
+      description: Proposed API, tool schema, or interface
+      placeholder: |
+        {
+          "name": "mobile_device_mcp_new_tool",
+          "description": "Description of the new tool",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "device_id": {"type": "string"},
+              "param": {"type": "string"}
+            }
+          }
+        }
+      render: json
+
+  - type: textarea
+    id: technical-details
+    attributes:
+      label: Technical Details
+      description: Any technical considerations or implementation notes
+      placeholder: |
+        - Could use [library/crate] for [functionality]
+        - Might require [dependency] version [x.y.z]
+        - Should integrate with existing [component]
+        - Performance considerations: [details]
+
+  - type: textarea
+    id: mockup
+    attributes:
+      label: Mockups/Screenshots
+      description: Visual representation of the feature (if applicable)
+      placeholder: Drag and drop images here or paste image URLs
+
+  - type: dropdown
+    id: breaking-change
+    attributes:
+      label: Breaking Change
+      description: Would this feature introduce breaking changes?
+      options:
+        - No - Fully backward compatible
+        - Yes - Minor breaking changes
+        - Yes - Major breaking changes
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact and Benefits
+      description: What impact would this feature have?
+      placeholder: |
+        **Users impacted:** [description]
+        **Benefits:**
+        - Benefit 1
+        - Benefit 2
+
+        **Potential drawbacks:**
+        - Drawback 1
+
+  - type: textarea
+    id: research
+    attributes:
+      label: Prior Art
+      description: References to similar features in other projects
+      placeholder: |
+        - Project X implements this as [link]
+        - Similar approach in [library] [link]
+        - Related discussion in [community] [link]
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other relevant information
+      placeholder: Add any other context, links, or references...
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Are you willing to help implement this feature?
+      options:
+        - label: I would like to work on implementing this feature
+          required: false
+        - label: I can help with testing/documentation
+          required: false
+        - label: I can help with design/specification
+          required: false
+
+  - type: checkboxes
+    id: funding
+    attributes:
+      label: Funding/Sponsorship
+      description: Is this something your organization would sponsor?
+      options:
+        - label: My organization would be interested in sponsoring this feature
+          required: false

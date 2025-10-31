@@ -719,3 +719,229 @@ fn tool_set_orientation() -> ToolDefinition {
         })
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_all_tools_count() {
+        let tools = get_all_tools();
+        assert_eq!(tools.len(), 19, "Should have exactly 19 tools");
+    }
+
+    #[test]
+    fn test_all_tools_have_names() {
+        let tools = get_all_tools();
+        for tool in tools {
+            assert!(!tool.name.is_empty(), "Tool name should not be empty");
+            assert!(
+                tool.name.starts_with("mobile_device_mcp_"),
+                "Tool name should start with mobile_device_mcp_ prefix"
+            );
+        }
+    }
+
+    #[test]
+    fn test_all_tools_have_descriptions() {
+        let tools = get_all_tools();
+        for tool in tools {
+            assert!(
+                !tool.description.is_empty(),
+                "Tool {} should have a description",
+                tool.name
+            );
+        }
+    }
+
+    #[test]
+    fn test_all_tools_have_input_schemas() {
+        let tools = get_all_tools();
+        for tool in tools {
+            assert!(
+                tool.input_schema.is_object(),
+                "Tool {} should have an object input schema",
+                tool.name
+            );
+        }
+    }
+
+    #[test]
+    fn test_tool_names_unique() {
+        let tools = get_all_tools();
+        let mut names = std::collections::HashSet::new();
+        for tool in tools {
+            assert!(
+                names.insert(tool.name.clone()),
+                "Tool name {} should be unique",
+                tool.name
+            );
+        }
+    }
+
+    #[test]
+    fn test_tool_definition_to_json() {
+        let tool = ToolDefinition::new(
+            "test_tool",
+            "Test description",
+            serde_json::json!({"type": "object"}),
+        );
+
+        let json = tool.to_json();
+        assert_eq!(json["name"], "test_tool");
+        assert_eq!(json["description"], "Test description");
+        assert!(json["inputSchema"].is_object());
+    }
+
+    #[test]
+    fn test_list_devices_tool() {
+        let tools = get_all_tools();
+        let list_devices = tools
+            .iter()
+            .find(|t| t.name == "mobile_device_mcp_list_available_devices")
+            .expect("Should have list_available_devices tool");
+
+        assert!(list_devices.description.contains("available"));
+    }
+
+    #[test]
+    fn test_screenshot_tool() {
+        let tools = get_all_tools();
+        let screenshot = tools
+            .iter()
+            .find(|t| t.name == "mobile_device_mcp_take_screenshot")
+            .expect("Should have take_screenshot tool");
+
+        let schema = &screenshot.input_schema;
+        assert!(schema["properties"]["device_id"].is_object());
+        assert!(schema["properties"]["platform"].is_object());
+    }
+
+    #[test]
+    fn test_tap_tool() {
+        let tools = get_all_tools();
+        let tap = tools
+            .iter()
+            .find(|t| t.name == "mobile_device_mcp_click_on_screen_at_coordinates")
+            .expect("Should have tap tool");
+
+        let schema = &tap.input_schema;
+        assert!(schema["properties"]["x"].is_object());
+        assert!(schema["properties"]["y"].is_object());
+        assert_eq!(schema["properties"]["x"]["type"], "number");
+        assert_eq!(schema["properties"]["y"]["type"], "number");
+    }
+
+    #[test]
+    fn test_type_text_tool() {
+        let tools = get_all_tools();
+        let type_text = tools
+            .iter()
+            .find(|t| t.name == "mobile_device_mcp_type_keys")
+            .expect("Should have type_keys tool");
+
+        let schema = &type_text.input_schema;
+        assert!(schema["properties"]["text"].is_object());
+        assert_eq!(schema["properties"]["text"]["type"], "string");
+    }
+
+    #[test]
+    fn test_swipe_tool() {
+        let tools = get_all_tools();
+        let swipe = tools
+            .iter()
+            .find(|t| t.name == "mobile_device_mcp_swipe_on_screen")
+            .expect("Should have swipe tool");
+
+        let schema = &swipe.input_schema;
+        assert!(schema["properties"]["start_x"].is_object());
+        assert!(schema["properties"]["start_y"].is_object());
+        assert!(schema["properties"]["end_x"].is_object());
+        assert!(schema["properties"]["end_y"].is_object());
+    }
+
+    #[test]
+    fn test_launch_app_tool() {
+        let tools = get_all_tools();
+        let launch_app = tools
+            .iter()
+            .find(|t| t.name == "mobile_device_mcp_launch_app")
+            .expect("Should have launch_app tool");
+
+        let schema = &launch_app.input_schema;
+        assert!(schema["properties"]["app_id"].is_object());
+    }
+
+    #[test]
+    fn test_required_fields() {
+        let tools = get_all_tools();
+        for tool in tools {
+            if tool.input_schema["required"].is_array() {
+                let required = tool.input_schema["required"].as_array().unwrap();
+                for field in required {
+                    let field_name = field.as_str().unwrap();
+                    assert!(
+                        tool.input_schema["properties"][field_name].is_object(),
+                        "Required field {} should be in properties for tool {}",
+                        field_name,
+                        tool.name
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_platform_enum_values() {
+        let tools = get_all_tools();
+        for tool in tools {
+            if let Some(platform_prop) = tool.input_schema["properties"]["platform"].as_object() {
+                if let Some(enum_values) = platform_prop.get("enum") {
+                    let enums = enum_values.as_array().unwrap();
+                    assert!(enums.contains(&serde_json::json!("android")));
+                    assert!(enums.contains(&serde_json::json!("ios")));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_orientation_enum_values() {
+        let tools = get_all_tools();
+        let set_orientation = tools
+            .iter()
+            .find(|t| t.name == "mobile_device_mcp_set_orientation")
+            .expect("Should have set_orientation tool");
+
+        let enum_values = set_orientation.input_schema["properties"]["orientation"]["enum"]
+            .as_array()
+            .unwrap();
+        assert!(enum_values.contains(&serde_json::json!("portrait")));
+        assert!(enum_values.contains(&serde_json::json!("landscape")));
+    }
+
+    #[test]
+    fn test_button_enum_values() {
+        let tools = get_all_tools();
+        let press_button = tools
+            .iter()
+            .find(|t| t.name == "mobile_device_mcp_press_button")
+            .expect("Should have press_button tool");
+
+        let enum_values = press_button.input_schema["properties"]["button"]["enum"]
+            .as_array()
+            .unwrap();
+        assert!(enum_values.contains(&serde_json::json!("home")));
+        assert!(enum_values.contains(&serde_json::json!("back")));
+        assert!(enum_values.contains(&serde_json::json!("power")));
+    }
+
+    #[test]
+    fn test_all_tools_serializable() {
+        let tools = get_all_tools();
+        for tool in tools {
+            let json = serde_json::to_string(&tool.to_json());
+            assert!(json.is_ok(), "Tool {} should be serializable", tool.name);
+        }
+    }
+}
