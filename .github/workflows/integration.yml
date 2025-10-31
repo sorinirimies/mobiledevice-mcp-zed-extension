@@ -106,7 +106,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: android-integration-results-${{ matrix.os }}-api${{ matrix.api-level }}
           path: |
@@ -193,7 +193,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ios-integration-results-${{ matrix.device }}
           path: |
