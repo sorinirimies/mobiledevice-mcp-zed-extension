@@ -40,7 +40,7 @@ Before you begin, ensure you have the following installed:
 
 ```bash
 # Clone the repository
-git clone https://github.com/sorinirimies/mobile-device-mcp.git
+git clone https://github.com/sorinirimies/mobiledevice-mcp-zed-extension.git
 cd mobile-device-mcp
 
 # Run automated development setup

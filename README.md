@@ -1,9 +1,9 @@
 # Mobile Device MCP Server
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI](https://github.com/sorinirimies/mobile-device-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/sorinirimies/mobile-device-mcp/actions/workflows/ci.yml)
-[![Release](https://github.com/sorinirimies/mobile-device-mcp/actions/workflows/release.yml/badge.svg)](https://github.com/sorinirimies/mobile-device-mcp/actions/workflows/release.yml)
-[![codecov](https://codecov.io/gh/sorinirimies/mobile-device-mcp/branch/main/graph/badge.svg)](https://codecov.io/gh/sorinirimies/mobile-device-mcp)
+[![CI](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/ci.yml/badge.svg)](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/ci.yml)
+[![Release](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/release.yml/badge.svg)](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/release.yml)
+[![codecov](https://codecov.io/gh/sorinirimies/mobiledevice-mcp-zed-extension/branch/main/graph/badge.svg)](https://codecov.io/gh/sorinirimies/mobiledevice-mcp-zed-extension)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
 [![Android](https://img.shields.io/badge/Android-ADB-green.svg)](https://developer.android.com/tools/adb)
 [![iOS](https://img.shields.io/badge/iOS-simctl-blue.svg)](https://developer.apple.com/documentation/xcode)
@@ -145,7 +145,7 @@ idevice_id -l  # Lists connected physical devices
 
 ```bash
 # Clone repository
-git clone https://github.com/sorinirimies/mobile-device-mcp
+git clone https://github.com/sorinirimies/mobiledevice-mcp-zed-extension
 cd mobile-device-mcp
 
 # Build native binary
@@ -630,8 +630,8 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 📞 Support
 
-- **Issues:** [GitHub Issues](https://github.com/sorinirimies/mobile-device-mcp/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/sorinirimies/mobile-device-mcp/discussions)
+- **Issues:** [GitHub Issues](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/discussions)
 
 ---
 

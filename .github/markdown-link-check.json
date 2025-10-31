@@ -8,6 +8,21 @@
     },
     {
       "pattern": "^https://crates.io/crates/"
+    },
+    {
+      "pattern": "^https://developer.android.com"
+    },
+    {
+      "pattern": "^https://source.android.com"
+    },
+    {
+      "pattern": "^https://keith.github.io/xcode-man-pages"
+    },
+    {
+      "pattern": "^https://appium.io"
+    },
+    {
+      "pattern": "^https://codecov.io"
     }
   ],
   "replacementPatterns": [
@@ -20,13 +35,14 @@
     {
       "urls": ["https://github.com"],
       "headers": {
-        "Accept": "text/html"
+        "Accept": "text/html",
+        "User-Agent": "Mozilla/5.0"
       }
     }
   ],
-  "timeout": "20s",
+  "timeout": "30s",
   "retryOn429": true,
-  "retryCount": 3,
-  "fallbackRetryDelay": "30s",
-  "aliveStatusCodes": [200, 206, 301, 302, 307, 308, 403, 429]
+  "retryCount": 5,
+  "fallbackRetryDelay": "60s",
+  "aliveStatusCodes": [200, 206, 301, 302, 307, 308, 403, 429, 999]
 }

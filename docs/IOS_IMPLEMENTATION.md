@@ -68,7 +68,7 @@ idevicescreenshot --help
 brew install ios-deploy
 
 # Install WebDriverAgent for UI automation (optional)
-# Follow: https://appium.io/docs/en/drivers/ios-xcuitest-real-devices/
+# Follow: https://github.com/appium/WebDriverAgent
 ```
 
 **Device Setup:**
@@ -624,9 +624,9 @@ brew reinstall libimobiledevice
 ## Additional Resources
 
 - [Xcode Command Line Tools Documentation](https://developer.apple.com/library/archive/technotes/tn2339/_index.html)
-- [simctl Man Page](https://keith.github.io/xcode-man-pages/simctl.1.html)
+- [simctl Man Page](https://developer.apple.com/documentation/xcode)
 - [libimobiledevice Documentation](https://libimobiledevice.org/)
-- [WebDriverAgent Setup Guide](https://appium.io/docs/en/drivers/ios-xcuitest-real-devices/)
+- [WebDriverAgent Setup Guide](https://github.com/appium/WebDriverAgent)
 - [iOS Automation Best Practices](https://developer.apple.com/documentation/xctest)
 
 ## Contributing

@@ -8,7 +8,7 @@ Get up and running with the Mobile Device MCP Server CI/CD infrastructure in min
 
 ```bash
 # Clone and enter repository
-git clone https://github.com/sorinirimies/mobile-device-mcp.git
+git clone https://github.com/sorinirimies/mobiledevice-mcp-zed-extension.git
 cd mobile-device-mcp
 
 # Install Just command runner

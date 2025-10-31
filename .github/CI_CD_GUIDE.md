@@ -302,9 +302,9 @@ Configure these in GitHub repository settings:
 Add to README.md:
 
 ```markdown
-[![CI](https://github.com/sorinirimies/mobile-device-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/sorinirimies/mobile-device-mcp/actions/workflows/ci.yml)
-[![Release](https://github.com/sorinirimies/mobile-device-mcp/actions/workflows/release.yml/badge.svg)](https://github.com/sorinirimies/mobile-device-mcp/actions/workflows/release.yml)
-[![codecov](https://codecov.io/gh/sorinirimies/mobile-device-mcp/branch/main/graph/badge.svg)](https://codecov.io/gh/sorinirimies/mobile-device-mcp)
+[![CI](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/ci.yml/badge.svg)](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/ci.yml)
+[![Release](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/release.yml/badge.svg)](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/release.yml)
+[![codecov](https://codecov.io/gh/sorinirimies/mobiledevice-mcp-zed-extension/branch/main/graph/badge.svg)](https://codecov.io/gh/sorinirimies/mobiledevice-mcp-zed-extension)
 ```
 
 ## 🆘 Troubleshooting
