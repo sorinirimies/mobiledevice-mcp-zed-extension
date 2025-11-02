@@ -2,8 +2,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/ci.yml/badge.svg)](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/ci.yml)
-[![Release](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/release.yml/badge.svg)](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/release.yml)
-[![codecov](https://codecov.io/gh/sorinirimies/mobiledevice-mcp-zed-extension/branch/main/graph/badge.svg)](https://codecov.io/gh/sorinirimies/mobiledevice-mcp-zed-extension)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
 [![Android](https://img.shields.io/badge/Android-ADB-green.svg)](https://developer.android.com/tools/adb)
 [![iOS](https://img.shields.io/badge/iOS-simctl-blue.svg)](https://developer.apple.com/documentation/xcode)
@@ -519,74 +517,41 @@ See [Cross-Platform Guide](docs/CROSS_PLATFORM.md) for detailed instructions.
 
 ## 🔄 CI/CD
 
-This project uses GitHub Actions for continuous integration and deployment:
+This project uses lightweight GitHub Actions workflows for essential checks:
 
 ### Workflows
 
 - **CI** (`.github/workflows/ci.yml`) - Runs on every push and PR
-  - ✅ Tests on Ubuntu, macOS, and Windows
-  - ✅ Runs with stable and beta Rust
-  - ✅ Code formatting checks (`cargo fmt`)
+  - ✅ Tests (Ubuntu only)
+  - ✅ Code formatting (`cargo fmt`)
   - ✅ Linting with Clippy
-  - ✅ Documentation checks
-  - ✅ Security audits
-  - ✅ Code coverage reports
-  - ✅ MSRV (Minimum Supported Rust Version) checks
 
 - **Release** (`.github/workflows/release.yml`) - Triggered on version tags
-  - 📦 Builds binaries for all platforms (Linux, macOS, Windows)
-  - 📦 Builds WASM extension for Zed
-  - 📦 Creates GitHub releases with changelog
-  - 📦 Publishes to crates.io
-  - 📦 Generates release artifacts
+  - 📦 Builds binaries for Linux, macOS (ARM), and Windows
+  - 📦 Creates GitHub releases
+  - 📦 Uploads release artifacts
 
-- **Documentation** (`.github/workflows/docs.yml`) - Deploys docs to GitHub Pages
-  - 📚 Builds and publishes API documentation
-  - 🔗 Checks markdown links
-  - ✏️ Spell checking
-
-### Local CI Checks
-
-Run the same checks as CI locally:
+### Local Checks
 
 ```bash
-# Run all CI checks
-just ci
+# Run formatting and linting
+just fmt
+just lint
+just test
 
-# Individual checks
-just fmt-check    # Check formatting
-just lint         # Run clippy
-just test         # Run tests
-just doc-check    # Check documentation
-just audit        # Security audit
+# Or all at once
+just pre-commit
 ```
 
 ### Creating a Release
 
 ```bash
-# Using just (recommended)
-just release 0.2.0
-
-# Or manually
-git-cliff --tag v0.2.0 --output CHANGELOG.md
-git add CHANGELOG.md
-git commit -m "chore: release v0.2.0"
+# Tag and push
 git tag -a "v0.2.0" -m "Release v0.2.0"
 git push origin main --tags
 ```
 
-The release workflow will automatically:
-1. Build binaries for all platforms
-2. Create a GitHub release with changelog
-3. Upload release artifacts
-4. Publish to crates.io (if configured)
-
-### Dependabot
-
-Automated dependency updates are configured via `.github/dependabot.yml`:
-- Weekly updates for Cargo dependencies
-- Weekly updates for GitHub Actions
-- Grouped minor and patch updates
+The release workflow will automatically build and upload binaries for supported platforms.
 
 ## 🗂️ Changelog
 

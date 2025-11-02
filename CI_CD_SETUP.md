@@ -1,66 +1,35 @@
 # CI/CD Setup Summary
 
-This document summarizes the complete CI/CD infrastructure added to the Mobile Device MCP Server project.
+This document summarizes the simplified CI/CD infrastructure for the Mobile Device MCP Server project.
 
 ## 📦 What Was Added
 
 ### GitHub Actions Workflows
 
 #### 1. **CI Workflow** (`.github/workflows/ci.yml`)
-Comprehensive continuous integration pipeline that runs on every push and pull request.
+Lightweight continuous integration pipeline that runs on every push and pull request.
 
 **Jobs:**
-- ✅ **Test Suite** - Runs tests on Ubuntu, macOS, and Windows with stable and beta Rust
-- ✅ **Code Quality** - Formatting checks (rustfmt), linting (clippy), documentation validation
-- ✅ **Multi-Platform Builds** - Native binaries for Linux (x86_64, ARM64), macOS (Intel, Apple Silicon), Windows, and WASM
-- ✅ **Security Audit** - Automated vulnerability scanning with cargo-audit
-- ✅ **Code Coverage** - Test coverage reporting with cargo-tarpaulin and Codecov integration
-- ✅ **MSRV Check** - Ensures compatibility with Rust 1.70+
+- ✅ **Test Suite** - Runs tests on Ubuntu only
+- ✅ **Code Quality** - Formatting checks (rustfmt) and linting (clippy)
 
-**Status:** ✅ Production Ready
+**Status:** ✅ Production Ready (Cost-Optimized)
 
 #### 2. **Release Workflow** (`.github/workflows/release.yml`)
-Automated release pipeline triggered by version tags (e.g., `v0.2.0`).
+Streamlined release pipeline triggered by version tags (e.g., `v0.2.0`).
 
 **Jobs:**
-- 📦 **Create Release** - Generates GitHub release with git-cliff changelog
-- 📦 **Build Binaries** - Cross-platform release builds (7 targets)
-- 📦 **Publish Crate** - Automatic crates.io publishing for stable releases
-- 📦 **Zed Extension** - Packages WASM extension with metadata
-- 📦 **Post-Release** - Updates CHANGELOG.md in repository
+- 📦 **Create Release** - Generates GitHub release
+- 📦 **Build Binaries** - Cross-platform release builds (3 targets)
 
 **Artifacts Created:**
-- Linux: x86_64 and ARM64 tarballs
-- macOS: Intel and Apple Silicon tarballs
+- Linux: x86_64 tarball
+- macOS: ARM64 (Apple Silicon) tarball
 - Windows: x86_64 zip archive
-- WASM: Zed extension package
-- Complete extension bundle with documentation
 
-**Status:** ✅ Production Ready
+**Status:** ✅ Production Ready (Cost-Optimized)
 
-#### 3. **Documentation Workflow** (`.github/workflows/docs.yml`)
-Builds and deploys API documentation to GitHub Pages.
 
-**Jobs:**
-- 📚 **Build Docs** - Generates rustdoc with private items
-- 📚 **Deploy to Pages** - Automatic deployment on main branch
-- 🔗 **Link Validation** - Checks markdown links for broken references
-- ✏️ **Spell Checking** - Typos scanner for documentation quality
-
-**Status:** ✅ Production Ready
-
-#### 4. **Integration Tests** (`.github/workflows/integration.yml`)
-Comprehensive device testing with emulators and simulators.
-
-**Jobs:**
-- 🤖 **Android Tests** - Emulator tests on API levels 30 and 33
-- 📱 **iOS Tests** - Simulator tests with iPhone 15, iPad Pro
-- 🌐 **Cross-Platform** - Compatibility validation on all OSes
-- 🔷 **WASM Validation** - WebAssembly binary verification
-
-**Schedule:** Daily at 2 AM UTC + manual trigger + on main push
-
-**Status:** ✅ Production Ready
 
 ### Development Tools
 
@@ -170,24 +139,19 @@ Line ending and file type configuration:
 ## 🎯 Key Features
 
 ### Automated Quality Gates
-- ✅ No PRs can merge without passing all checks
+- ✅ No PRs can merge without passing checks
 - ✅ Consistent code style enforced (rustfmt)
 - ✅ Zero Clippy warnings policy
-- ✅ Automated security audits
-- ✅ Documentation must build cleanly
 
 ### Cross-Platform Support
-- ✅ Tests run on Linux, macOS, and Windows
-- ✅ Multiple Rust versions (stable, beta)
-- ✅ ARM64 and x86_64 builds
-- ✅ WASM target validation
+- ✅ Tests run on Ubuntu
+- ✅ Release builds for Linux, macOS, Windows
+- ✅ Optimized for cost efficiency
 
 ### Automated Releases
-- ✅ One command release process: `just release 0.2.0`
-- ✅ Automatic changelog generation
+- ✅ Tag-based release process
 - ✅ Multi-platform binary builds
 - ✅ GitHub release with artifacts
-- ✅ Crates.io publishing (configurable)
 
 ### Developer Experience
 - ✅ Simple command runner (just)
@@ -244,12 +208,8 @@ git push origin main --tags
 ┌─────────────────────────────────────────────────────────────┐
 │                      CI Workflow                             │
 ├─────────────────────────────────────────────────────────────┤
-│  • Test Suite (Ubuntu, macOS, Windows)                      │
-│  • Code Quality (fmt, clippy, docs)                         │
-│  • Multi-Platform Builds                                     │
-│  • Security Audit                                            │
-│  • Code Coverage                                             │
-│  • MSRV Check                                                │
+│  • Test Suite (Ubuntu only)                                 │
+│  • Code Quality (fmt, clippy)                               │
 └────────────────────────┬────────────────────────────────────┘
                          │
                     All Checks Pass
@@ -260,14 +220,7 @@ git push origin main --tags
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│                 Documentation Workflow                       │
-├─────────────────────────────────────────────────────────────┤
-│  • Build Rustdoc                                             │
-│  • Deploy to GitHub Pages                                    │
-│  • Validate Links                                            │
-│  • Spell Check                                               │
-└─────────────────────────────────────────────────────────────┘
+
 ```
 
 ```
@@ -280,19 +233,14 @@ git push origin main --tags
 │                   Release Workflow                           │
 ├─────────────────────────────────────────────────────────────┤
 │  1. Create GitHub Release                                    │
-│  2. Build Release Binaries (7 targets)                       │
-│  3. Generate Changelog                                       │
-│  4. Publish to crates.io                                     │
-│  5. Package Zed Extension                                    │
-│  6. Upload Artifacts                                         │
+│  2. Build Release Binaries (3 targets)                       │
+│  3. Upload Artifacts                                         │
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
 │              Release Available on GitHub                     │
-│    • Binaries for all platforms                              │
-│    • WASM extension package                                  │
-│    • Auto-generated changelog                                │
+│    • Binaries for Linux, macOS, Windows                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -301,77 +249,50 @@ git push origin main --tags
 ### GitHub Repository Settings
 
 #### Secrets (Optional)
-- `CARGO_REGISTRY_TOKEN` - For crates.io publishing
-- `CODECOV_TOKEN` - For coverage uploads (optional)
-
-#### GitHub Pages
-- Enable GitHub Pages in repository settings
-- Source: GitHub Actions
-- URL: `https://sorinirimies.github.io/mobile-device-mcp/`
+None required for basic functionality
 
 #### Branch Protection (Recommended)
 - Require status checks to pass before merging
-- Require up-to-date branches before merging
 - Required checks:
   - `test` (CI workflow)
-  - `check` (CI workflow)
-  - `build` (CI workflow)
+  - `lint` (CI workflow)
 
 ## 📈 Metrics and Monitoring
 
 ### Status Badges
 Added to README.md:
 - [![CI](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/ci.yml/badge.svg)](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/ci.yml)
-- [![Release](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/release.yml/badge.svg)](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/actions/workflows/release.yml)
-- [![codecov](https://codecov.io/gh/sorinirimies/mobiledevice-mcp-zed-extension/branch/main/graph/badge.svg)](https://codecov.io/gh/sorinirimies/mobiledevice-mcp-zed-extension)
-
-### Code Coverage
-- Automated coverage reporting with cargo-tarpaulin
-- Uploads to Codecov on every CI run
-- Coverage trends tracked over time
-
-### Dependency Updates
-- Automated weekly updates via Dependabot
-- Grouped updates for efficiency
-- Conventional commit messages for changelog
 
 ## 🛠️ Maintenance
 
 ### Regular Tasks
-- **Weekly:** Review Dependabot PRs
 - **Monthly:** Check for outdated tooling (`just outdated`)
-- **Per Release:** Update CHANGELOG.md (automated)
+- **Per Release:** Update CHANGELOG.md manually
 - **Quarterly:** Review and update CI/CD workflows
 
 ### Monitoring
 - Watch GitHub Actions runs for failures
-- Review code coverage trends
-- Monitor security audit results
-- Check integration test results (daily runs)
+- Review test results on PRs
 
 ## 📝 Documentation Updates
 
 ### README.md
-- ✅ Added CI/CD badges
+- ✅ Added CI badge
 - ✅ Added "Using Just" section
-- ✅ Added CI/CD section with workflow descriptions
+- ✅ Added simplified CI/CD section
 - ✅ Updated testing instructions
 - ✅ Updated development workflow
-- ✅ Added contributing workflow section
 
 ## ✅ Verification Checklist
 
-- [x] All workflow files created and valid
+- [x] Simplified workflow files
 - [x] Justfile with 40+ commands
-- [x] Dependabot configuration
 - [x] Contributing guide
-- [x] CI/CD documentation
+- [x] CI/CD documentation updated
 - [x] Issue and PR templates
-- [x] Git attributes configured
-- [x] Spell checker configuration
-- [x] Link checker configuration
-- [x] README updated with CI/CD info
+- [x] README updated with simplified CI/CD info
 - [x] No syntax errors or warnings
+- [x] Cost-optimized for minimal runner usage
 
 ## 🎓 Learning Resources
 
@@ -384,22 +305,14 @@ Added to README.md:
 ## 🚀 Next Steps
 
 ### Immediate
-1. Push CI/CD configuration to repository
-2. Configure GitHub Pages in repository settings
-3. Add `CARGO_REGISTRY_TOKEN` secret (if publishing to crates.io)
-4. Test workflows by creating a PR
+1. ✅ Push simplified CI/CD configuration to repository
+2. ✅ Test workflows by creating a PR
 
-### Short Term
-1. Monitor first few CI runs
-2. Adjust workflow timeouts if needed
-3. Fine-tune integration test environments
-4. Add more integration test scenarios
-
-### Long Term
-1. Add performance benchmarking workflow
-2. Create nightly build workflow
-3. Add Docker container builds
-4. Implement code signing for releases
+### Future Enhancements (Optional)
+1. Add code coverage if needed
+2. Add security auditing if needed
+3. Add multi-platform testing if budget allows
+4. Add integration tests with emulators if needed
 
 ## 📞 Support
 
@@ -411,7 +324,7 @@ For CI/CD related questions:
 
 ---
 
-**Version:** 1.0.0  
+**Version:** 2.0.0 (Simplified)  
 **Last Updated:** 2024-11-01  
-**Status:** ✅ Production Ready  
+**Status:** ✅ Production Ready (Cost-Optimized)  
 **Created By:** Mobile Device MCP Team

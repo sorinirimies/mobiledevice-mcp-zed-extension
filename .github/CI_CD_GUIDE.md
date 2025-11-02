@@ -1,6 +1,6 @@
 # CI/CD Quick Reference Guide
 
-This guide provides a quick reference for the CI/CD workflows and commands used in the Mobile Device MCP Server project.
+This guide provides a quick reference for the simplified CI/CD workflows used in the Mobile Device MCP Server project.
 
 ## 🚀 Quick Start
 
@@ -11,35 +11,33 @@ cargo install just
 # Setup development environment
 just dev-setup
 
-# Run all CI checks locally
-just ci
+# Run local checks
+just pre-commit
 ```
 
 ## 📊 CI/CD Workflows
 
 ### 1. CI Workflow (`.github/workflows/ci.yml`)
 
-**Triggers:** Push to main/develop, Pull Requests, Manual dispatch
+**Triggers:** Push to main, Pull Requests
 
 **Jobs:**
 
-| Job | Description | Platforms | Status |
-|-----|-------------|-----------|--------|
-| `test` | Run test suite | Ubuntu, macOS, Windows | ✅ Required |
-| `check` | Format, lint, docs | Ubuntu | ✅ Required |
-| `build` | Build all targets | All platforms + WASM | ✅ Required |
-| `security` | Security audit | Ubuntu | ⚠️ Warning |
-| `coverage` | Code coverage | Ubuntu | ℹ️ Optional |
-| `msrv` | Rust 1.70+ check | Ubuntu | ✅ Required |
+| Job | Description | Platform | Status |
+|-----|-------------|----------|--------|
+| `test` | Run test suite | Ubuntu | ✅ Required |
+| `lint` | Format & clippy checks | Ubuntu | ✅ Required |
 
 **Local Simulation:**
 ```bash
-just ci
+just test
+just lint
+just fmt
 ```
 
 ### 2. Release Workflow (`.github/workflows/release.yml`)
 
-**Triggers:** Tags matching `v*.*.*`, Manual dispatch
+**Triggers:** Tags matching `v*.*.*`
 
 **Jobs:**
 
@@ -47,51 +45,16 @@ just ci
 |-----|-------------|---------|
 | `create-release` | Create GitHub release | Release URL |
 | `build-release` | Build binaries | Platform-specific archives |
-| `publish-crate` | Publish to crates.io | Package version |
-| `build-zed-extension` | Package Zed extension | Extension tarball |
-| `post-release` | Update changelog | Updated CHANGELOG.md |
 
 **Artifacts Created:**
-- `mobile-device-mcp-server-linux-x86_64.tar.gz`
-- `mobile-device-mcp-server-linux-aarch64.tar.gz`
-- `mobile-device-mcp-server-macos-x86_64.tar.gz`
-- `mobile-device-mcp-server-macos-aarch64.tar.gz`
-- `mobile-device-mcp-server-windows-x86_64.exe.zip`
-- `mobile-device-mcp.wasm`
-- `mobile-device-mcp-zed-extension.tar.gz`
+- `mobile-device-mcp-linux-x86_64.tar.gz`
+- `mobile-device-mcp-macos-aarch64.tar.gz`
+- `mobile-device-mcp-windows-x86_64.zip`
 
 **Create Release:**
 ```bash
-just release 0.2.0
+git tag -a v0.2.0 -m "Release v0.2.0"
 git push origin main --tags
-```
-
-### 3. Documentation Workflow (`.github/workflows/docs.yml`)
-
-**Triggers:** Push to main, Pull Requests, Manual dispatch
-
-**Jobs:**
-- `build-docs` - Generate rustdoc
-- `deploy-docs` - Deploy to GitHub Pages (main branch only)
-- `check-links` - Validate markdown links
-- `check-spelling` - Spell check documentation
-
-**View Docs:** https://sorinirimies.github.io/mobile-device-mcp/
-
-### 4. Integration Tests (`.github/workflows/integration.yml`)
-
-**Triggers:** Daily at 2 AM UTC, Push to main, Manual dispatch
-
-**Jobs:**
-- `test-android` - Android emulator tests (API 30, 33)
-- `test-ios-simulator` - iOS simulator tests (iPhone 15, iPad)
-- `test-cross-platform` - Compatibility tests
-- `test-wasm` - WASM validation
-
-**Manual Trigger:**
-```bash
-# Via GitHub Actions UI or gh CLI
-gh workflow run integration.yml
 ```
 
 ## 🛠️ Just Commands Reference
