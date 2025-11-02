@@ -15,8 +15,11 @@ use crate::devices::android::{
 };
 
 pub struct IOSDeviceManager {
+    #[allow(dead_code)]
     debug: bool,
+    #[allow(dead_code)]
     idevice_available: bool,
+    #[allow(dead_code)]
     xcrun_available: bool,
 }
 
@@ -32,6 +35,7 @@ impl IOSDeviceManager {
         }
     }
 
+    #[allow(dead_code)]
     fn log_debug(&self, message: &str) {
         if self.debug {
             eprintln!("[DEBUG] iOS: {}", message);
@@ -107,6 +111,7 @@ impl IOSDeviceManager {
     }
 
     #[cfg(not(target_os = "macos"))]
+    #[allow(dead_code)]
     fn list_real_devices(&self) -> Result<Vec<DeviceInfo>, String> {
         Ok(Vec::new())
     }
@@ -235,6 +240,7 @@ impl IOSDeviceManager {
     }
 
     #[cfg(not(target_os = "macos"))]
+    #[allow(dead_code)]
     fn list_simulators(&self) -> Result<Vec<DeviceInfo>, String> {
         Ok(Vec::new())
     }
@@ -350,7 +356,7 @@ impl IOSDeviceManager {
 
         // Try simulator tapping using xcrun simctl
         if self.xcrun_available {
-            match Command::new("xcrun")
+            if let Ok(output) = Command::new("xcrun")
                 .args([
                     "simctl",
                     "io",
@@ -361,16 +367,13 @@ impl IOSDeviceManager {
                 ])
                 .output()
             {
-                Ok(output) => {
-                    if output.status.success() {
-                        self.log_debug("Simulator tap executed successfully");
-                        return Ok(format!(
-                            "Tapped screen at ({}, {}) on device {}",
-                            x, y, device_id
-                        ));
-                    }
+                if output.status.success() {
+                    self.log_debug("Simulator tap executed successfully");
+                    return Ok(format!(
+                        "Tapped screen at ({}, {}) on device {}",
+                        x, y, device_id
+                    ));
                 }
-                Err(_) => {}
             }
         }
 
@@ -692,6 +695,7 @@ impl IOSDeviceManager {
     }
 
     /// Estimate screen size based on device name
+    #[allow(dead_code)]
     fn estimate_screen_size_from_name(&self, name: &str) -> ScreenSize {
         // Common iOS device screen sizes (logical points)
         if name.contains("iPhone 15 Pro Max") || name.contains("iPhone 14 Pro Max") {
