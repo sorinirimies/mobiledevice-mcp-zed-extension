@@ -3,63 +3,102 @@ name: Release
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*"
 
-env:
-  CARGO_TERM_COLOR: always
+permissions:
+  contents: write
 
 jobs:
-  create-release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get version
-        id: get_version
-        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.get_version.outputs.version }}
-          release_name: Release ${{ steps.get_version.outputs.version }}
-          draft: false
-          prerelease: false
-
-  build-release:
-    name: Build ${{ matrix.target }}
-    needs: create-release
+  test:
+    name: Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Check formatting
+        if: matrix.os == 'ubuntu-latest'
+        run: cargo fmt --all -- --check
+
+      - name: Run clippy
+        run: cargo clippy --all-features -- -D warnings
+
+      - name: Run tests
+        run: cargo test --all-features
+
+  build-wasm:
+    name: Build WASM Extension
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip1
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build WASM extension
+        run: cargo build --release --target wasm32-wasip1 --lib
+
+      - name: Package WASM extension
+        run: |
+          mkdir -p extension
+          cp target/wasm32-wasip1/release/mobile_device_mcp.wasm extension/
+          cp extension.toml extension/ 2>/dev/null || echo "extension.toml not found, skipping"
+          cp README.md extension/
+          cp LICENSE extension/
+          tar czf mobile-device-mcp-extension.tar.gz extension/
+
+      - name: Upload WASM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-device-mcp-extension
+          path: mobile-device-mcp-extension.tar.gz
+
+  build-native:
+    name: Build Native Binary for ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    needs: test
+    strategy:
+      fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             name: linux-x86_64
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            name: macos-aarch64
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             name: windows-x86_64
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
-      - uses: Swatinem/rust-cache@v2
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
 
-      - name: Build
+      - name: Build native binary
         run: cargo build --release --target ${{ matrix.target }} --features native-binary
 
       - name: Package (Unix)
@@ -74,12 +113,61 @@ jobs:
           cd target/${{ matrix.target }}/release
           7z a ../../../mobile-device-mcp-${{ matrix.name }}.zip mobile-device-mcp-server.exe
 
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
+      - name: Upload native binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-device-mcp-${{ matrix.name }}
+          path: mobile-device-mcp-${{ matrix.name }}.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-wasm, build-native]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Move artifacts to root
+        run: |
+          find artifacts -type f -exec mv {} . \;
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: |
+            ## Mobile Device MCP Zed Extension ${{ github.ref_name }}
+
+            ### 📦 Installation
+
+            This is a Zed extension. To install:
+
+            1. Download `mobile-device-mcp-extension.tar.gz` below
+            2. Extract the archive
+            3. Follow Zed extension installation instructions
+
+            ### 🖥️ Native MCP Server Binaries
+
+            Optional standalone MCP server binaries are also provided:
+            - **Linux**: `mobile-device-mcp-linux-x86_64.tar.gz`
+            - **Windows**: `mobile-device-mcp-windows-x86_64.zip`
+
+            Note: macOS binaries are not provided in automated releases. macOS users can build from source.
+
+            ### 📝 Changes
+
+            See [CHANGELOG.md](CHANGELOG.md) for details.
+          files: |
+            mobile-device-mcp-extension.tar.gz
+            mobile-device-mcp-*.tar.gz
+            mobile-device-mcp-*.zip
+            LICENSE
+            README.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: mobile-device-mcp-${{ matrix.name }}.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
-          asset_name: mobile-device-mcp-${{ matrix.name }}.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
-          asset_content_type: application/octet-stream
