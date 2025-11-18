@@ -34,7 +34,7 @@ adb_client = { version = "2.1", optional = true }
 base64 = { version = "0.22", optional = true }
 tokio = { version = "1.40", features = ["full", "rt-multi-thread"], optional = true }
 uuid = { version = "1.11", features = ["v4"], optional = true }
-quick-xml = { version = "0.31", features = ["serialize"], optional = true }
+quick-xml = { version = "0.38", features = ["serialize"], optional = true }
 
 # iOS device support (only on macOS for native binary)
 [target.'cfg(target_os = "macos")'.dependencies]
