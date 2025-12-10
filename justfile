@@ -328,3 +328,93 @@ dev-setup: setup check-deps init-hooks
     @echo "  just install-zed - Install Zed extension"
     @echo ""
     @echo "Run 'just' to see all available commands"
+
+# ============================================================================
+# Publishing & Release Management
+# ============================================================================
+
+# Pre-publish checks (run before releasing)
+pre-publish: pre-commit test-coverage
+    @echo "Running pre-publish checks..."
+    @echo "✅ All checks passed - ready to publish!"
+
+# Publish dry-run to crates.io
+publish-dry-run:
+    @echo "Running publish dry-run..."
+    cargo publish --dry-run --features native-binary
+    @echo "✅ Dry-run successful"
+
+# Publish native binary to crates.io
+publish-crates:
+    @echo "Publishing to crates.io..."
+    @echo "⚠️  This will publish version $(grep '^version' Cargo.toml | head -1 | cut -d'"' -f2)"
+    @read -p "Continue? (y/N) " confirm && [ "$$confirm" = "y" ] || exit 1
+    cargo publish --features native-binary
+    @echo "✅ Published to crates.io!"
+
+# Build and package WASM extension for Zed
+package-zed:
+    @echo "Packaging Zed extension..."
+    mkdir -p extension
+    cargo build --release --target wasm32-wasip1 --lib
+    cp target/wasm32-wasip1/release/mobile_device_mcp.wasm extension/
+    cp extension.toml extension/
+    cp LICENSE extension/
+    cp README.md extension/
+    tar czf mobile-device-mcp-extension.tar.gz extension/
+    @echo "✅ Extension packaged: mobile-device-mcp-extension.tar.gz"
+
+# Full release workflow
+release-full VERSION:
+    @echo "Starting release workflow for v{{VERSION}}..."
+    @echo ""
+    @echo "This will:"
+    @echo "  1. Update version in Cargo.toml and extension.toml"
+    @echo "  2. Generate changelog"
+    @echo "  3. Commit changes"
+    @echo "  4. Create git tag"
+    @echo "  5. Run pre-publish checks"
+    @echo ""
+    @read -p "Continue? (y/N) " confirm && [ "$$confirm" = "y" ] || exit 1
+    @# Update Cargo.toml version
+    @sed -i.bak 's/^version = ".*"/version = "{{VERSION}}"/' Cargo.toml && rm Cargo.toml.bak
+    @# Update extension.toml version
+    @sed -i.bak 's/^version = ".*"/version = "{{VERSION}}"/' extension.toml && rm extension.toml.bak
+    @# Generate changelog
+    just changelog-tag {{VERSION}}
+    @# Commit and tag
+    git add Cargo.toml extension.toml CHANGELOG.md
+    git commit -m "chore: release v{{VERSION}}"
+    git tag -a "v{{VERSION}}" -m "Release v{{VERSION}}"
+    @# Run checks
+    just pre-publish
+    @echo ""
+    @echo "✅ Release v{{VERSION}} prepared!"
+    @echo ""
+    @echo "Next steps:"
+    @echo "  1. Push: git push origin main --tags"
+    @echo "  2. Publish to crates.io: just publish-crates"
+    @echo "  3. Package Zed extension: just package-zed"
+    @echo "  4. Submit to Zed extensions repo"
+
+# Quick publish (assumes version already updated)
+publish VERSION:
+    @echo "Publishing v{{VERSION}}..."
+    just pre-publish
+    just publish-crates
+    just package-zed
+    @echo ""
+    @echo "✅ Published successfully!"
+    @echo ""
+    @echo "Don't forget to:"
+    @echo "  - Push tag: git push origin v{{VERSION}}"
+    @echo "  - Submit Zed extension PR"
+    @echo "  - Announce release"
+
+# Verify installation after publish
+verify-install:
+    @echo "Verifying installation..."
+    cargo install mobile-device-mcp-server --force
+    @which mobile-device-mcp-server || { echo "❌ Binary not found in PATH"; exit 1; }
+    @mobile-device-mcp-server --version || true
+    @echo "✅ Installation verified"

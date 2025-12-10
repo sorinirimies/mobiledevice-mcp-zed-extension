@@ -112,30 +112,26 @@ Tech Stack:
 ### Prerequisites
 
 **Android Support (All Platforms):**
+No additional tools required! The server uses a pure Rust ADB implementation (`adb_client` crate).
+- Just enable USB debugging on your Android device
+- The server handles all ADB communication natively
+- No need to install `android-platform-tools` or `adb` separately
+
+**iOS Simulator Support (macOS only):**
 ```bash
-# macOS
-brew install android-platform-tools
-
-# Linux (Ubuntu/Debian)
-sudo apt-get install android-tools-adb
-
-# Windows (PowerShell)
-choco install adb
-
-# Verify
-adb version
-```
-
-**iOS Support (macOS only):**
-```bash
-# Install Xcode Command Line Tools (required)
+# Install Xcode Command Line Tools (REQUIRED for simctl)
 xcode-select --install
-
-# Install libimobiledevice (optional, for physical devices)
-brew install libimobiledevice
 
 # Verify
 xcrun simctl list devices
+```
+
+**iOS Real Device Support (macOS only):**
+```bash
+# Install libimobiledevice (REQUIRED for physical devices)
+brew install libimobiledevice
+
+# Verify
 idevice_id -l  # Lists connected physical devices
 ```
 
@@ -461,26 +457,16 @@ echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"mobile_dev
 
 ### Android Issues
 
-**ADB not found:**
-```bash
-# Add to PATH
-export PATH=$PATH:$ANDROID_HOME/platform-tools
-```
+**No devices detected:**
+- Enable USB debugging on your device (Settings → Developer Options → USB Debugging)
+- The server's built-in ADB client will automatically detect connected devices
+- For emulators, ensure they're running: `emulator -list-avds`
+- The Rust `adb_client` handles all communication natively - no external ADB tools needed
 
 **Device unauthorized:**
-```bash
-# Revoke and re-authorize
-adb kill-server
-adb start-server
-# Accept prompt on device
-```
-
-**Emulator not detected:**
-```bash
-# Check ADB connection
-adb devices
-adb kill-server && adb start-server
-```
+- Check your Android device screen for an authorization prompt
+- Accept the "Allow USB debugging" dialog
+- The server will automatically reconnect once authorized
 
 ### iOS Issues
 
@@ -509,9 +495,11 @@ xcrun simctl boot "iPhone 15"
 | **Windows** | ✅ Full | ❌ N/A | Production Ready |
 
 **Quick Setup:**
-- **macOS:** `brew install android-platform-tools && xcode-select --install`
-- **Linux:** `sudo apt-get install android-tools-adb`
-- **Windows:** `choco install adb`
+- **macOS:** `xcode-select --install` (for iOS simulators), `brew install libimobiledevice` (for iOS devices)
+- **Linux:** No additional tools needed (Android only)
+- **Windows:** No additional tools needed (Android only)
+
+**Note:** Android support uses a pure Rust ADB implementation - no platform tools required!
 
 See [Cross-Platform Guide](docs/CROSS_PLATFORM.md) for detailed instructions.
 

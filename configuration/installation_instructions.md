@@ -30,14 +30,18 @@ source ~/.zshrc
 ## 3. Install Platform Tools
 
 **For Android:**
+No additional tools required! The server uses a pure Rust ADB implementation.
+- Just enable USB debugging on your device
+- The server handles all ADB communication natively
+
+**For iOS Simulators (macOS only):**
 ```bash
-brew install android-platform-tools  # macOS
-# or: sudo apt install adb            # Linux
+xcode-select --install  # REQUIRED for simctl
 ```
 
-**For iOS (macOS only):**
+**For iOS Real Devices (macOS only):**
 ```bash
-xcode-select --install
+brew install libimobiledevice  # REQUIRED for physical device support
 ```
 
 ## 4. Enable in Zed Settings
@@ -91,13 +95,18 @@ And more! See [full documentation](https://github.com/sorinirimies/mobiledevice-
 - Ensure binary is installed: `which mobile-device-mcp-server`
 - Check logs: `~/Library/Logs/Zed/Zed.log` (macOS)
 
-**No devices found?**
-```bash
-# Android
-adb devices
+**No Android devices found?**
+- Enable USB debugging on your device (Settings → Developer Options)
+- The server's built-in ADB client will automatically detect devices
+- No need to install `adb` separately!
 
-# iOS
+**No iOS devices found?**
+```bash
+# Simulators (requires xcode-select)
 xcrun simctl list devices
+
+# Real devices (requires libimobiledevice)
+idevice_id -l
 ```
 
 **Need help?** [Open an issue](https://github.com/sorinirimies/mobiledevice-mcp-zed-extension/issues)
